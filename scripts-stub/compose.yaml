@@ -1,0 +1,194 @@
+# sdk-build-plan/scripts-stub/compose.yaml
+# 单机/小集群一键起栈
+#
+# 部署在 build-host (8c/16G+, /data 大盘) 上:
+#   1. cp .env.example .env  &&  填入秘钥
+#   2. docker compose up -d
+#   3. 首次运行后访问:
+#        https://nexus.intra/         Nexus
+#        https://jenkins.intra/       Jenkinscall
+#        https://s3.intra/            MinIO API
+#        https://files.intra/         MinIO Console
+#        https://browse.intra/        Filebrowser (可选, 给非技术人看)
+#        https://sentry.intra/        Sentry self-hosted (单独 stack)
+#        https://uploads.intra/       upload-token
+#        https://logs.intra/          decrypt-proxy
+
+name: sdk-build-system
+
+x-restart: &restart restart: unless-stopped
+
+networks:
+  internal: {}
+  edge:     {}
+
+volumes:
+  caddy_data: {}
+  caddy_cfg:  {}
+  nexus_data: {}
+  jenkins_data: {}
+  minio_data: {}
+  pg_data: {}
+  redis_data: {}
+  audit_logs: {}
+
+services:
+  # ---------- 反代 / TLS / SSO 入口 ----------
+  caddy:
+    image: caddy:2-alpine
+    <<: *restart
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_cfg:/config
+    networks: [edge, internal]
+
+  # ---------- 包托管 ----------
+  nexus:
+    image: sonatype/nexus3:latest
+    <<: *restart
+    environment:
+      INSTALL4J_ADD_VM_PARAMS: "-Xms2g -Xmx4g -XX:MaxDirectMemorySize=4g"
+    volumes: [nexus_data:/nexus-data]
+    networks: [internal]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8081/service/rest/v1/status"]
+      interval: 30s
+
+  # ---------- 出包流水线 ----------
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17
+    <<: *restart
+    user: "1000:1000"
+    environment:
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=/var/jenkins_home/casc/jenkins.yaml"
+      CASC_JENKINS_CONFIG: /var/jenkins_home/casc/jenkins.yaml
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - ./jenkins/casc:/var/jenkins_home/casc:ro
+    networks: [internal]
+    # 代理通过 SSH/inbound, 不在这里暴露 50000
+
+  # ---------- 对象存储 ----------
+  minio:
+    image: quay.io/minio/minio:latest
+    <<: *restart
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER:     ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_PROMETHEUS_AUTH_TYPE: public
+    volumes: [minio_data:/data]
+    networks: [internal]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:9000/minio/health/ready"]
+      interval: 30s
+
+  # 一次性初始化：建桶 / 设 lifecycle / 建账号
+  minio-init:
+    image: minio/mc:latest
+    depends_on: { minio: { condition: service_healthy } }
+    networks: [internal]
+    entrypoint: ["/bin/sh", "-c"]
+    volumes:
+      - ./minio/lifecycles:/lc:ro
+      - ./minio/policies:/policies:ro
+    command: |
+      "
+      set -e
+      mc alias set local http://minio:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD
+      for b in sdk-logs sdk-dumps sdk-symbols sdk-release-mirror; do
+        mc mb -p local/$$b || true
+        mc version enable    local/$$b
+        mc encrypt set sse-s3 local/$$b || true
+      done
+      mc retention set --default GOVERNANCE 365d local/sdk-release-mirror
+      for f in /lc/*.json; do
+        bn=$$(basename $$f .json)
+        mc ilm import local/$$bn < $$f
+      done
+      for f in /policies/*.json; do
+        bn=$$(basename $$f .json)
+        mc admin policy create local $$bn $$f || true
+      done
+      "
+    environment:
+      MINIO_ROOT_USER:     ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    restart: "no"
+
+  # ---------- catalog DB ----------
+  catalog-db:
+    image: postgres:16-alpine
+    <<: *restart
+    environment:
+      POSTGRES_USER:     catalog
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB:       catalog
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
+    networks: [internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U catalog"]
+      interval: 10s
+
+  redis:
+    image: redis:7-alpine
+    <<: *restart
+    volumes: [redis_data:/data]
+    networks: [internal]
+
+  # ---------- 自研: upload-token ----------
+  upload-token:
+    build: ./upload-token
+    <<: *restart
+    depends_on:
+      catalog-db: { condition: service_healthy }
+      minio:      { condition: service_healthy }
+    environment:
+      JWT_SECRET:    ${UPLOAD_JWT_SECRET}
+      ACTIVATE_HMAC: ${UPLOAD_ACTIVATE_HMAC}
+      S3_ENDPOINT:   http://minio:9000
+      S3_PUBLIC_ENDPOINT: https://s3.intra
+      S3_AK:         ${MINIO_APP_AK}
+      S3_SK:         ${MINIO_APP_SK}
+      DB_URL:        postgresql+psycopg://catalog:${PG_PASSWORD}@catalog-db:5432/catalog
+    networks: [internal]
+
+  # ---------- 自研: decrypt-proxy ----------
+  decrypt-proxy:
+    build: ./decrypt-proxy
+    <<: *restart
+    depends_on:
+      catalog-db: { condition: service_healthy }
+      minio:      { condition: service_healthy }
+    environment:
+      SESSION_SECRET:                 ${PROXY_SESSION_SECRET}
+      DECRYPT_PROXY_OIDC_ISSUER:      https://git.intra/
+      OIDC_CLIENT_ID:                 ${OIDC_CLIENT_ID}
+      OIDC_CLIENT_SECRET:             ${OIDC_CLIENT_SECRET}
+      DECRYPT_PROXY_KEYRING:          /secrets/keyring.json
+      DECRYPT_PROXY_AUDIT_LOG:        /audit/audit.jsonl
+      S3_ENDPOINT:                    http://minio:9000
+      S3_AK:                          ${MINIO_PROXY_AK}
+      S3_SK:                          ${MINIO_PROXY_SK}
+      DB_URL:                         postgresql+psycopg://catalog:${PG_PASSWORD}@catalog-db:5432/catalog
+      SENTRY_MINIDUMP_ENDPOINT:       ${SENTRY_MINIDUMP_ENDPOINT}
+    volumes:
+      - ./secrets/keyring.json:/secrets/keyring.json:ro
+      - audit_logs:/audit
+    networks: [internal]
+
+  # ---------- 给非技术同事看的 MinIO 浏览器 (只读, 走 SSO) ----------
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    <<: *restart
+    command: --noauth=false --address 0.0.0.0
+    environment:
+      FB_NOAUTH: "false"
+    volumes:
+      - minio_data:/srv:ro     # 直接挂只读, 仅当 minio 数据可挂载时
+    networks: [internal]
+    profiles: ["optional"]
