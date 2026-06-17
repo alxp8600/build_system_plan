@@ -1,0 +1,12 @@
+configuration-as-code
+workflow-aggregator
+git
+pipeline-stage-view
+blueocean
+mailer
+job-dsl
+pipeline-utility-steps
+http_request
+ansicolor
+timestamper
+ws-cleanup

@@ -1,0 +1,1 @@
+SELECT object_key, state, size, bucket FROM artifacts ORDER BY created_at DESC LIMIT 10;

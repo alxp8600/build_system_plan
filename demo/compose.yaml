@@ -1,0 +1,183 @@
+name: sdk-build-demo
+
+x-restart: &restart
+  restart: unless-stopped
+
+networks:
+  internal: {}
+  edge: {}
+
+volumes:
+  caddy_data: {}
+  caddy_cfg: {}
+  minio_data: {}
+  pg_data: {}
+  redis_data: {}
+  audit_logs: {}
+  grafana_data: {}
+  jenkins_home: {}
+
+services:
+  # ---------- 反代 ----------
+  caddy:
+    image: caddy:2-alpine
+    <<: *restart
+    ports: ["8080:80"]
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_cfg:/config
+    networks: [edge, internal]
+
+  # ---------- 对象存储 ----------
+  minio:
+    image: quay.io/minio/minio:latest
+    <<: *restart
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes: [minio_data:/data]
+    networks: [internal]
+    ports: ["9000:9000", "9001:9001"]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:9000/minio/health/ready"]
+      interval: 30s
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    networks: [internal]
+    entrypoint: ["/bin/sh", "/init.sh"]
+    volumes:
+      - ./minio/minio-init.sh:/init.sh:ro
+      - ./minio/lifecycles:/lc:ro
+      - ./minio/policies:/policies:ro
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_APP_AK: ${MINIO_APP_AK}
+      MINIO_APP_SK: ${MINIO_APP_SK}
+      MINIO_PROXY_AK: ${MINIO_PROXY_AK}
+      MINIO_PROXY_SK: ${MINIO_PROXY_SK}
+      MINIO_JENKINS_AK: ${MINIO_JENKINS_AK}
+      MINIO_JENKINS_SK: ${MINIO_JENKINS_SK}
+    restart: "no"
+
+  # ---------- catalog DB ----------
+  catalog-db:
+    image: postgres:16-alpine
+    <<: *restart
+    environment:
+      POSTGRES_USER: catalog
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: catalog
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
+    networks: [internal]
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U catalog"]
+      interval: 10s
+
+  redis:
+    image: redis:7-alpine
+    <<: *restart
+    volumes: [redis_data:/data]
+    networks: [internal]
+
+  # ---------- upload-token ----------
+  upload-token:
+    build: ./upload-token
+    <<: *restart
+    depends_on:
+      catalog-db:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      JWT_SECRET: ${UPLOAD_JWT_SECRET}
+      ACTIVATE_HMAC: ${UPLOAD_ACTIVATE_HMAC}
+      S3_ENDPOINT: http://minio:9000
+      S3_PUBLIC_ENDPOINT: http://localhost:9000
+      S3_AK: ${MINIO_APP_AK}
+      S3_SK: ${MINIO_APP_SK}
+      DB_URL: postgresql://catalog:${PG_PASSWORD}@catalog-db:5432/catalog
+    networks: [internal]
+    ports: ["8001:8000"]
+
+  # ---------- decrypt-proxy ----------
+  decrypt-proxy:
+    build: ./decrypt-proxy
+    <<: *restart
+    depends_on:
+      catalog-db:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      SESSION_SECRET: ${PROXY_SESSION_SECRET}
+      DECRYPT_PROXY_OIDC_ISSUER: https://git.intra/
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET}
+      DECRYPT_PROXY_KEYRING: /secrets/keyring.json
+      DECRYPT_PROXY_AUDIT_LOG: /audit/audit.jsonl
+      S3_ENDPOINT: http://minio:9000
+      S3_AK: ${MINIO_ROOT_USER}
+      S3_SK: ${MINIO_ROOT_PASSWORD}
+      DB_URL: postgresql://catalog:${PG_PASSWORD}@catalog-db:5432/catalog
+      SENTRY_MINIDUMP_ENDPOINT: ${SENTRY_MINIDUMP_ENDPOINT}
+    volumes:
+      - ./secrets/keyring.json:/secrets/keyring.json:ro
+      - audit_logs:/audit
+    networks: [internal]
+    ports: ["8002:8000"]
+
+  # ---------- Grafana 可视化查询 ----------
+  grafana:
+    image: grafana/grafana:latest
+    <<: *restart
+    environment:
+      GF_SERVER_ROOT_URL: http://localhost:3000
+      GF_SERVER_PROTOCOL: http
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+    networks: [internal]
+    ports: ["3000:3000"]
+
+  # ---------- Jenkins ----------
+  jenkins:
+    build: ./jenkins
+    <<: *restart
+    environment:
+      JAVA_OPTS: -Djenkins.install.runSetupWizard=false -Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -Xmx1024m
+      JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_JENKINS_AK: ${MINIO_JENKINS_AK}
+      MINIO_JENKINS_SK: ${MINIO_JENKINS_SK}
+      PG_PASSWORD: ${PG_PASSWORD}
+      NEXUS_USER: ${NEXUS_USER}
+      NEXUS_PASS: ${NEXUS_PASS}
+      SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
+      CDC_REPO: ${CDC_REPO:-git@gitlab.vrviu.com:core/cdc.git}
+      CDS_REPO: ${CDS_REPO:-git@gitlab.vrviu.com:core/cds.git}
+      GIT_SSH_PRIVATE_KEY: ${GIT_SSH_PRIVATE_KEY:-}
+      TZ: Asia/Shanghai
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./jenkins/ssh:/var/jenkins_home/.ssh:ro
+    networks: [internal]
+    ports: ["8081:8080", "50000:50000"]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/login"]
+      interval: 30s
+      retries: 5

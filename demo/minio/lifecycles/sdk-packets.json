@@ -1,0 +1,10 @@
+{
+  "Rules": [
+    {
+      "ID": "packets-demo-30d",
+      "Status": "Enabled",
+      "Expiration": { "Days": 30 },
+      "Filter": { "Prefix": "" }
+    }
+  ]
+}

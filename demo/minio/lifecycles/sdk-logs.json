@@ -1,0 +1,10 @@
+{
+  "Rules": [
+    {
+      "ID": "logs-demo-30d",
+      "Status": "Enabled",
+      "Expiration": { "Days": 30 },
+      "Filter": { "Prefix": "" }
+    }
+  ]
+}

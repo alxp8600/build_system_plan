@@ -1,0 +1,19 @@
+{
+  email demo@localhost
+  auto_https disable_redirects
+}
+
+:80 {
+  handle_path /proxy/* {
+    reverse_proxy decrypt-proxy:8000
+  }
+  route {
+    reverse_proxy /minio/* minio:9001
+    reverse_proxy /s3/*    minio:9000
+    reverse_proxy /api/token/* upload-token:8000
+    reverse_proxy /files/* filebrowser:80
+    reverse_proxy /* caddy:80
+  }
+}
+
+# 如果不指定域名，直接用端口映射更简单

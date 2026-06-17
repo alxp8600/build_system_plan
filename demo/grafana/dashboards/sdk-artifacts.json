@@ -1,0 +1,220 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "catalog-pg"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "download" },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "下载",
+                    "url": "http://localhost:8080/s3/${__data.fields.bucket}/${__data.fields.object_key}",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "bucket" },
+            "properties": [
+              { "id": "custom.hidden", "value": true }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "object_key" },
+            "properties": [
+              { "id": "custom.hidden", "value": true }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 18,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": true,
+          "reducer": ["count"],
+          "fields": "",
+          "countRows": true
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "13.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "catalog-pg"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawSql": "SELECT kind, product, channel, app_release, platform, os, device_id, occurred_at AS time, bucket, object_key, CASE WHEN size < 1024 THEN size || ' B' WHEN size < 1048576 THEN round(size/1024.0, 1) || ' KB' ELSE round(size/1048576.0, 1) || ' MB' END AS size_fmt, state, '⬇' AS download FROM artifacts WHERE deleted_at IS NULL AND kind = '$kind' AND product = '$product' AND channel = '$channel' AND platform IN ($platform) AND state IN ($state) AND ('$device_id' = '' OR device_id LIKE '%' || '$device_id' || '%') ORDER BY occurred_at DESC LIMIT 200",
+          "refId": "A",
+          "sql": {
+            "columns": [],
+            "groupBy": [],
+            "having": []
+          }
+        }
+      ],
+      "title": "SDK 日志与崩溃查询",
+      "type": "table"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 39,
+  "tags": [
+    "sdk",
+    "artifacts"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "log",
+          "value": "log"
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "catalog-pg"
+        },
+        "definition": "SELECT DISTINCT kind FROM artifacts WHERE deleted_at IS NULL ORDER BY kind",
+        "label": "类型",
+        "name": "kind",
+        "query": "SELECT DISTINCT kind FROM artifacts WHERE deleted_at IS NULL ORDER BY kind",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "sdk",
+          "value": "sdk"
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "catalog-pg"
+        },
+        "definition": "SELECT DISTINCT product FROM artifacts WHERE deleted_at IS NULL ORDER BY product",
+        "label": "产品",
+        "name": "product",
+        "query": "SELECT DISTINCT product FROM artifacts WHERE deleted_at IS NULL ORDER BY product",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "dev",
+          "value": "dev"
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "catalog-pg"
+        },
+        "definition": "SELECT DISTINCT channel FROM artifacts WHERE deleted_at IS NULL ORDER BY channel",
+        "label": "渠道",
+        "name": "channel",
+        "query": "SELECT DISTINCT channel FROM artifacts WHERE deleted_at IS NULL ORDER BY channel",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "catalog-pg"
+        },
+        "definition": "SELECT DISTINCT platform FROM artifacts WHERE deleted_at IS NULL ORDER BY platform",
+        "label": "平台",
+        "name": "platform",
+        "query": "SELECT DISTINCT platform FROM artifacts WHERE deleted_at IS NULL ORDER BY platform",
+        "refresh": 1,
+        "type": "query",
+        "multi": true,
+        "includeAll": true
+      },
+      {
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "catalog-pg"
+        },
+        "definition": "SELECT DISTINCT state FROM artifacts WHERE deleted_at IS NULL ORDER BY state",
+        "label": "状态",
+        "name": "state",
+        "query": "SELECT DISTINCT state FROM artifacts WHERE deleted_at IS NULL ORDER BY state",
+        "refresh": 1,
+        "type": "query",
+        "multi": true,
+        "includeAll": true
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "catalog-pg"
+        },
+        "label": "设备ID(模糊)",
+        "name": "device_id",
+        "query": "",
+        "type": "textbox"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "SDK 日志与崩溃查询",
+  "uid": "sdk-artifacts",
+  "version": 20,
+  "weekStart": ""
+}

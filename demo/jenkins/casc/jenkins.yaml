@@ -1,0 +1,149 @@
+# Jenkins Configuration as Code — demo 环境
+jenkins:
+  systemMessage: "SDK Build System Demo — Jenkins"
+  numExecutors: 2
+  scmCheckoutRetryCount: 2
+  disabledAdministrativeMonitors:
+    - "hudson.model.UpdateCenter$CoreUpdateMonitor"
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: admin
+          password: ${JENKINS_ADMIN_PASSWORD}
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+
+# 凭证（Jenkins → 其他组件）
+credentials:
+  system:
+    domainCredentials:
+      - domain:
+          name: "sdk-demo"
+        credentials:
+          # MinIO — jenkins-uploader 专用 AK/SK
+          - usernamePassword:
+              scope: SYSTEM
+              id: minio-jenkins
+              username: ${MINIO_JENKINS_AK}
+              password: ${MINIO_JENKINS_SK}
+              description: "MinIO uploader credentials"
+
+          # MinIO root（admin 权限，仅 demo 用）
+          - usernamePassword:
+              scope: SYSTEM
+              id: minio-root
+              username: ${MINIO_ROOT_USER}
+              password: ${MINIO_ROOT_PASSWORD}
+              description: "MinIO root credentials"
+
+          # PostgreSQL catalog DB
+          - usernamePassword:
+              scope: SYSTEM
+              id: catalog-db
+              username: catalog
+              password: ${PG_PASSWORD}
+              description: "PostgreSQL catalog DB"
+
+          # Nexus（demo 无 Nexus，占位）
+          - usernamePassword:
+              scope: SYSTEM
+              id: nexus
+              username: ${NEXUS_USER}
+              password: ${NEXUS_PASS}
+              description: "Nexus uploader"
+
+          # Sentry auth token（demo 无 Sentry，占位）
+          - string:
+              scope: SYSTEM
+              id: sentry-token
+              secret: ${SENTRY_AUTH_TOKEN}
+              description: "Sentry auth token"
+
+          # GitLab SSH 私钥（用于拉取私有仓库）
+          - basicSSHUserPrivateKey:
+              scope: SYSTEM
+              id: gitea-bot
+              username: jenkins
+              description: "SSH key for GitLab/Gitea private repos"
+              privateKeySource:
+                directEntry:
+                  privateKey: ${GIT_SSH_PRIVATE_KEY}
+
+# Shared Library
+unclassified:
+  globalLibraries:
+    libraries:
+      - name: "sdk-shared-lib"
+        defaultVersion: "main"
+        implicit: true
+        allowVersionOverride: false
+        retriever:
+          modernSCM:
+            scm:
+              git:
+                remote: "${CDC_REPO:-git@gitlab.vrviu.com:core/cdc.git}"
+                credentialsId: "gitea-bot"
+
+tool:
+  git:
+    installations:
+      - name: "Default"
+        home: "/usr/bin/git"
+
+# Job DSL seed — 启动时自动创建 demo pipeline
+jobs:
+  - script: >
+      pipelineJob("sdk-demo-pipeline") {
+        description("Demo: 模拟多平台构建 → Nexus/MinIO/catalog DB")
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote { url("${CDS_REPO:-git@gitlab.vrviu.com:core/cds.git}") }
+                branch("*/main")
+              }
+              scriptPath("Jenkinsfile")
+            }
+          }
+        }
+        triggers {
+          scm("H/5 * * * *")
+        }
+      }
+  - script: >
+      freeStyleJob("cdc-win") {
+        description("Windows 构建 → 打包 → 上传 MinIO — 拉 CDC 代码")
+        label("windows")
+        scm {
+          git {
+            remote {
+              url("${CDC_REPO:-git@gitlab.vrviu.com:core/cdc.git}")
+              credentials("gitea-bot")
+            }
+            branch("main")
+          }
+        }
+        configure { project ->
+          (project / 'properties' / 'EnvInjectJobProperty') {
+            keepBuildVariables(false)
+            keepJenkinsSystemVariables(false)
+            on(true)
+            info {
+              propertiesContent("MINIO_ENDPOINT=http://minio:9000")
+              loadFilesFromMaster(false)
+            }
+          }
+        }
+        wrappers {
+          credentialsBinding {
+            usernamePassword("MINIO_AK", "MINIO_SK", "minio-jenkins")
+          }
+        }
+        steps {
+          powerShell("\$OutputEncoding = [System.Text.Encoding]::UTF8; chcp 65001 > \$null; cmd /c \"projects\\windows\\build.bat\" 2>&1")
+          powerShell("\$OutputEncoding = [System.Text.Encoding]::UTF8; chcp 65001 > \$null; cmd /c \"projects\\windows\\package.bat\" 2>&1")
+          powerShell("\$OutputEncoding = [System.Text.Encoding]::UTF8; chcp 65001 > \$null; cmd /c \"projects\\windows\\upload.bat\" 2>&1")
+        }
+      }
