@@ -4,6 +4,8 @@ git
 pipeline-stage-view
 blueocean
 mailer
+credentials-binding
+envinject
 job-dsl
 pipeline-utility-steps
 http_request

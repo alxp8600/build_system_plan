@@ -1,4 +1,4 @@
-name: sdk-build-demo
+name: sdk-CI
 
 x-restart: &restart
   restart: unless-stopped
@@ -157,7 +157,7 @@ services:
     build: ./jenkins
     <<: *restart
     environment:
-      JAVA_OPTS: -Djenkins.install.runSetupWizard=false -Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -Xmx1024m
+      JAVA_OPTS: -Djenkins.install.runSetupWizard=false -Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -Xmx2048m
       JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD}
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
@@ -175,9 +175,13 @@ services:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
       - ./jenkins/ssh:/var/jenkins_home/.ssh:ro
+      - ./jenkins/casc/jenkins.yaml:/usr/share/jenkins/ref/casc/jenkins.yaml:ro
+      - ./jenkins/jobs/cdc-win/config.xml:/var/jenkins_home/jobs/cdc-win/config.xml:ro
     networks: [internal]
     ports: ["8081:8080", "50000:50000"]
+    mem_limit: 4g
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8080/login"]
       interval: 30s
-      retries: 5
+      retries: 10
+      start_period: 120s
