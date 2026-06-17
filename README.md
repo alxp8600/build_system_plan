@@ -5,8 +5,10 @@
 > 适用场景：中小团队的音视频 SDK，多平台（Android / iOS / Windows / macOS / Linux），需要：
 > 1. Git 提交即触发多平台编译出包；
 > 2. 包 / 符号表 / 提测版本 / 线上版本 / 日志 / dump 集中管理；
-> 3. 客户端 SDK 把加密日志/dump 上传到服务器指定目录；
-> 4. 网页查询、下载、自动解密+解压、定位问题。
+> 3. 客户端 SDK 把日志/dump 上传到服务器指定目录；
+> 4. 网页查询、下载、定位问题。
+> 
+> ⚠️ **当前 demo 版本暂未包含加解密功能**：客户端直接上传原始文件，服务端透传下载。加解密链路留待后续版本补齐。
 
 ## 目录
 
@@ -17,17 +19,17 @@
 | [`03-服务器与目录结构.md`](03-服务器与目录结构.md) | 服务器规格、存储方案（NFS / MinIO）、目录与命名规范。 |
 | [`04-Jenkins出包方案.md`](04-Jenkins出包方案.md) | Jenkins 是否合适、插件清单、Pipeline 模板、Webhook 接入、签名/凭据管理。 |
 | [`05-包与符号表管理.md`](05-包与符号表管理.md) | 用什么仓库管什么包（Nexus/Generic + Sentry 符号表 + Git LFS 等），提测/线上版本流转。 |
-| [`06-日志Dump上传方案.md`](06-日志Dump上传方案.md) | 客户端"加密+压缩"格式选型、传输通道（MinIO presigned / HTTPS）、服务端落盘目录。 |
-| [`07-Web查询与解密下载.md`](07-Web查询与解密下载.md) | 选 Filebrowser / MinIO Console / Sentry / 自研薄壳的取舍；如何在网页"一键解密下载"。 |
+| [`06-日志Dump上传方案.md`](06-日志Dump上传方案.md) | 客户端打包格式选型、传输通道（MinIO presigned / HTTPS）、服务端落盘目录。⚠️ 当前 demo 暂未启用加密。 |
+| [`07-Web查询与下载.md`](07-Web查询与下载.md) | 选 Filebrowser / MinIO Console / Sentry / 自研薄壳的取舍；如何在网页查询和下载。 |
 | [`08-保留与清理策略.md`](08-保留与清理策略.md) | 各类数据保留时长、自动清理（MinIO Lifecycle / cron）。 |
-| [`09-安全与权限.md`](09-安全与权限.md) | 账号体系（Jenkins / Nexus / MinIO / Sentry / Web）、密钥管理、HTTPS、审计。 |
+| [`09-安全与权限.md`](09-安全与权限.md) | 账号体系（Jenkins / Nexus / MinIO / Sentry / Web）、HTTPS、审计。 |
 | [`10-部署清单与上线步骤.md`](10-部署清单与上线步骤.md) | 一份"按顺序点开就能搭好"的 checklist + docker-compose 骨架。 |
 | [`11-需要自己写的脚本清单.md`](11-需要自己写的脚本清单.md) | 唯一需要团队自己开发的胶水脚本（很少），明确边界。 |
 | [`scripts-stub/`](scripts-stub/) | 关键胶水脚本的最小可用骨架（不是完整产品代码）。 |
 
 ## TL;DR — 一句话方案
 
-> **Gitea/GitHub + Jenkins + Nexus(包) + Sentry(符号表/Crash) + MinIO(日志/Dump 原始文件) + Filebrowser(网页浏览/下载) + 一个 ~200 行的 Python 解密服务 + 一份 Jenkins Shared Library**。
+> **Gitea/GitHub + Jenkins + Nexus(包) + Sentry(符号表/Crash) + MinIO(日志/Dump 原始文件) + Filebrowser(网页浏览/下载) + 一个 ~100 行的 Python 透传服务 + 一份 Jenkins Shared Library**。
 
 各能力点对应组件：
 
@@ -42,10 +44,10 @@
 | 日志/Dump 原始存储 | **MinIO（S3 兼容，单机或 4 节点 EC）** |
 | 客户端上传 | MinIO **预签名 URL**（无需自建上传服务） |
 | 网页浏览/下载 | **Filebrowser**（轻量）或 **MinIO Console**（自带） |
-| 网页"解密+解压"下载 | 自写一个 ~200 行 Python FastAPI "decrypt-proxy"，对接 MinIO |
+| 网页查询/下载 | 自写一个 ~100 行 Python FastAPI "decrypt-proxy"，对接 MinIO 透传下载 |
 | 反向代理/TLS | **Caddy**（自动 HTTPS）或 Nginx |
 | 通知 | Jenkins → 飞书/钉钉/企业微信机器人（webhook 直接 POST） |
 
-整个系统的"自研代码量" = **1 个 FastAPI 小服务 + 1 套 Jenkins Shared Library + 几个 shell/python 胶水脚本**，其余全部是现成镜像 `docker compose up -d` 起来。
+整个系统的"自研代码量" = **1 个 FastAPI 透传服务 + 1 套 Jenkins Shared Library + 几个 shell/python 胶水脚本**，其余全部是现成镜像 `docker compose up -d` 起来。
 
 按顺序读 `01 → 10` 就能照着搭。需要写代码的部分见 `11` 和 `scripts-stub/`。

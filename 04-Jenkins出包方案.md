@@ -222,6 +222,57 @@ mc cp buildlog.txt myminio/sdk-builds/$PRODUCT/$VERSION-$BUILD_ID/
 
 Jenkins 启动加 `-DCASC_JENKINS_CONFIG=/var/jenkins_home/casc/jenkins.yaml`。
 
-## 12. 一句话总结
+## 12. CD/CI 双轨方案
 
-> **业务仓库只维护一份 30 行 Jenkinsfile + ci/scripts/build-*.sh，所有"通道、签名、上传、通知"都在 Shared Library 里。** 任何新 SDK 接入 = 复制这两件事即可，30 分钟接入完毕。
+实际工程中，**Shared Library + Multibranch Pipeline** 和 **简单 Freestyle Job** 可以共存：
+
+| 场景 | 方式 | 何时用 |
+|---|---|---|
+| 多平台矩阵（Android/iOS/Windows/Linux） | Shared Library `sdkPipeline()` | 多个 SDK 仓库复用同一模板，30 行 Jenkinsfile 接入 |
+| 单平台快速出包（仅 Windows） | Freestyle Job，3 个 batch step | 小团队/单产品，不需要 Shared Library 的复杂度 |
+
+### 12.1 Freestyle Job 示例（cdc-win）
+
+**Jenkins → New Item → Freestyle project**，构建步骤 3 个 Execute Windows batch command：
+
+```cmd
+rem Step 1: Build
+call projects\windows\build.bat Release
+
+rem Step 2: Package (zip with timestamp in filename)
+call projects\windows\package.bat Release
+
+rem Step 3: Upload to MinIO
+call projects\windows\upload.bat "" "http://minio.internal:9000" "%MINIO_JENKINS_AK%" "%MINIO_JENKINS_SK%"
+```
+
+**文件名传递机制**：
+- `package.bat` 成功后将 zip 文件名写入 `package\_last_zip.txt`
+- `upload.bat` 参数 1 为空时自动读取该文件，不再执行 `dir /o-d` glob（避免选错文件）
+- 也支持显式传入：`upload.bat "package\cdc-win-xxx.zip" ...`
+
+**Jenkins 凭据绑定**（Jenkins → Manage Credentials）：
+- `MINIO_JENKINS_AK` / `MINIO_JENKINS_SK` 为 `jenkins-uploader` 策略的 AK/SK
+- 在 Freestyle 配置中通过 **Bindings** → **Inject passwords as environment variables** 注入
+
+**MinIO 树形存储路径**（由 `upload.ps1` 自动解析 zip 文件名生成）：
+
+```
+cdc/develop/windows/1.0.0/20260616/cdc-win-1.0.0-develop.51+e2de945-20260616-183702.zip
+ ^^^  ^^^^^^^  ^^^^^^^   ^^^^^  ^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 产品   分支     平台     版本    日期                        文件名
+```
+
+- 分支从版本号 `*-develop.*` / `*-hotfix.*` / `*-rc.*` 中提取
+- 日期从文件名时间戳 `YYYYMMDD` 段提取（精度到天）
+- 上传前 HEAD 检查，已存在则跳过（幂等，不覆盖）
+
+详细代码参见：
+- `projects/windows/build.bat` — cmake 配置 + 编译
+- `projects/windows/package.bat` — 提取版本号 + 打包 zip
+- `projects/windows/upload.bat` — MinIO 上传 wrapper
+- `projects/windows/upload.ps1` — SigV4 签名 + HEAD 检查 + 上传 + 验证 + 删除本地文件
+
+## 13. 一句话总结
+
+> **业务仓库只维护一份 30 行 Jenkinsfile + ci/scripts/build-*.sh，所有"通道、签名、上传、通知"都在 Shared Library 里。** 任何新 SDK 接入 = 复制这两件事即可，30 分钟接入完毕。对于单平台场景，Freestyle + 3 个批处理同样可用，`package.bat → _last_zip.txt → upload.bat` 保证了文件名精确传递。
