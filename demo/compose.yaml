@@ -37,6 +37,7 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_CONSOLE_READ_ONLY: "false"
     volumes: [minio_data:/data]
     networks: [internal]
     ports: ["9000:9000", "9001:9001"]
@@ -176,7 +177,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./jenkins/ssh:/var/jenkins_home/.ssh:ro
       - ./jenkins/casc/jenkins.yaml:/usr/share/jenkins/ref/casc/jenkins.yaml:ro
-      - ./jenkins/jobs/cdc-win/config.xml:/var/jenkins_home/jobs/cdc-win/config.xml:ro
+      - ./jenkins/jobs/cdc-develop-win:/var/jenkins_home/jobs/cdc-develop-win
     networks: [internal]
     ports: ["8081:8080", "50000:50000"]
     mem_limit: 4g

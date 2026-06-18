@@ -1,0 +1,418 @@
+Started by user [8mha:////4OeZCzaYvSoYPnHB62QYdC7yNFSwA+EOaLg969ysKqcBAAAAlx+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzWEgZu/dLi1CL9xJTczDwAj6GcLcAAAAA=[0madmin
+Running as SYSTEM
+[EnvInject] - Loading node environment variables.
+Building remotely on [8mha:////4M/TxeQUBkmH+z4tv9Pt+WGuhEnMa13GiQno3V8yx46WAAAApB+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzeEgYJ/eT83ILSktQi/fLMvJT88mLdpNLMnBR9AJzK4ULNAAAA[0mwindows-build in workspace C:\JenkinsAgent\workspace\workspace\cdc-develop-win
+The recommended git tool is: NONE
+No credentials specified
+ > git.exe rev-parse --resolve-git-dir C:\JenkinsAgent\workspace\workspace\cdc-develop-win\.git # timeout=10
+Fetching changes from the remote Git repository
+ > git.exe config remote.origin.url git@gitlab.vrviu.com:core/cdc.git # timeout=10
+Fetching upstream changes from git@gitlab.vrviu.com:core/cdc.git
+ > git.exe --version # timeout=10
+ > git --version # 'git version 2.54.0.windows.1'
+ > git.exe fetch --tags --force --progress -- git@gitlab.vrviu.com:core/cdc.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git.exe rev-parse "refs/remotes/origin/develop^{commit}" # timeout=10
+Checking out Revision af4ccba9ab5fbe6a834ff7159e60ff5350ace877 (refs/remotes/origin/develop)
+ > git.exe config core.sparsecheckout # timeout=10
+ > git.exe checkout -f af4ccba9ab5fbe6a834ff7159e60ff5350ace877 # timeout=10
+ > git.exe branch -a -v --no-abbrev # timeout=10
+ > git.exe branch -D develop # timeout=10
+ > git.exe checkout -b develop af4ccba9ab5fbe6a834ff7159e60ff5350ace877 # timeout=10
+Commit message: "stream/tcp: track connect process and report"
+ > git.exe rev-list --no-walk af4ccba9ab5fbe6a834ff7159e60ff5350ace877 # timeout=10
+[cdc-develop-win] $ cmd /c call C:\Users\Admin\AppData\Local\Temp\jenkins9433929281337898250.bat
+
+C:\JenkinsAgent\workspace\workspace\cdc-develop-win>chcp 65001  1>nul 
+
+C:\JenkinsAgent\workspace\workspace\cdc-develop-win>call projects\windows\build.bat Release 
+============================================================
+  CDC SDK Build (Release | x64)
+============================================================
+
+[cdc] REPO_ROOT = C:\JenkinsAgent\workspace\workspace\cdc-develop-win
+
+[cdc] ---- Step 1/5: git submodule update ----
+[cdc] Submodules OK
+
+[cdc] ---- Step 2/5: Clean previous VS files ----
+[cdc] Clean OK
+
+[cdc] ---- Step 3/5: Assemble build metadata ----
+[cdc] branch    : develop
+[cdc] build no  : 2
+[cdc] commit    : af4ccba
+[cdc] metadata  : develop.2+af4ccba
+
+[cdc] ---- Step 4/5: CMake configure ----
+-- The C compiler identification is MSVC 19.51.36246.0
+-- The CXX compiler identification is MSVC 19.51.36246.0
+-- The OBJCXX compiler identification is MSVC 19.51.36246.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting OBJCXX compiler ABI info
+-- Detecting OBJCXX compiler ABI info - failed
+-- Check for working OBJCXX compiler: C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe
+-- Check for working OBJCXX compiler: C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe - works
+-- [cdc] target platform = windows
+-- [cdc] repo root       = C:/JenkinsAgent/workspace/workspace/cdc-develop-win
+-- [cdc] src dir         = C:/JenkinsAgent/workspace/workspace/cdc-develop-win/src
+-- [cdc] output root     = C:/JenkinsAgent/workspace/workspace/cdc-develop-win/build/windows
+-- [cdc] full version    = 1.0.0-develop.2+af4ccba
+CMake Warning (deprecated) at 3rd/libevent/CMakeLists.txt:22 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+This warning is for project developers.  Use -Wno-author or -Wno-deprecated
+to suppress it.
+
+-- Found Git: C:/Program Files/Git/cmd/git.exe (found version "2.54.0.windows.1")
+-- Looking for __GNU_LIBRARY__
+-- Looking for __GNU_LIBRARY__ - not found
+-- Looking for _GNU_SOURCE
+-- Looking for _GNU_SOURCE - not found
+-- Looking for include file fcntl.h
+-- Looking for include file fcntl.h - found
+-- Looking for include files fcntl.h, inttypes.h
+-- Looking for include files fcntl.h, inttypes.h - found
+-- Looking for 3 include files fcntl.h, ..., memory.h
+-- Looking for 3 include files fcntl.h, ..., memory.h - found
+-- Looking for 4 include files fcntl.h, ..., signal.h
+-- Looking for 4 include files fcntl.h, ..., signal.h - found
+-- Looking for 5 include files fcntl.h, ..., stdarg.h
+-- Looking for 5 include files fcntl.h, ..., stdarg.h - found
+-- Looking for 6 include files fcntl.h, ..., stddef.h
+-- Looking for 6 include files fcntl.h, ..., stddef.h - found
+-- Looking for 7 include files fcntl.h, ..., stdint.h
+-- Looking for 7 include files fcntl.h, ..., stdint.h - found
+-- Looking for 8 include files fcntl.h, ..., stdlib.h
+-- Looking for 8 include files fcntl.h, ..., stdlib.h - found
+-- Looking for 9 include files fcntl.h, ..., string.h
+-- Looking for 9 include files fcntl.h, ..., string.h - found
+-- Looking for 10 include files fcntl.h, ..., errno.h
+-- Looking for 10 include files fcntl.h, ..., errno.h - found
+-- Looking for 11 include files fcntl.h, ..., unistd.h
+-- Looking for 11 include files fcntl.h, ..., unistd.h - not found
+-- Looking for 11 include files fcntl.h, ..., time.h
+-- Looking for 11 include files fcntl.h, ..., time.h - found
+-- Looking for 12 include files fcntl.h, ..., sys/types.h
+-- Looking for 12 include files fcntl.h, ..., sys/types.h - found
+-- Looking for 13 include files fcntl.h, ..., sys/stat.h
+-- Looking for 13 include files fcntl.h, ..., sys/stat.h - found
+-- Looking for 14 include files fcntl.h, ..., sys/time.h
+-- Looking for 14 include files fcntl.h, ..., sys/time.h - not found
+-- Looking for 14 include files fcntl.h, ..., sys/param.h
+-- Looking for 14 include files fcntl.h, ..., sys/param.h - not found
+-- Looking for 14 include files fcntl.h, ..., io.h
+-- Looking for 14 include files fcntl.h, ..., io.h - found
+-- Looking for 15 include files fcntl.h, ..., winsock2.h
+-- Looking for 15 include files fcntl.h, ..., winsock2.h - found
+-- Looking for 16 include files fcntl.h, ..., ws2tcpip.h
+-- Looking for 16 include files fcntl.h, ..., ws2tcpip.h - found
+-- Looking for 17 include files fcntl.h, ..., afunix.h
+-- Looking for 17 include files fcntl.h, ..., afunix.h - found
+-- Looking for 18 include files fcntl.h, ..., sys/sysctl.h
+-- Looking for 18 include files fcntl.h, ..., sys/sysctl.h - not found
+-- Looking for getaddrinfo
+-- Looking for getaddrinfo - found
+-- Looking for getnameinfo
+-- Looking for getnameinfo - found
+-- Looking for getprotobynumber
+-- Looking for getprotobynumber - found
+-- Looking for getservbyname
+-- Looking for getservbyname - found
+-- Looking for gethostbyname
+-- Looking for gethostbyname - found
+-- Looking for inet_ntop
+-- Looking for inet_ntop - found
+-- Looking for inet_pton
+-- Looking for inet_pton - found
+-- Looking for gettimeofday
+-- Looking for gettimeofday - not found
+-- Looking for signal
+-- Looking for signal - found
+-- Looking for strtoll
+-- Looking for strtoll - found
+-- Looking for splice
+-- Looking for splice - not found
+-- Looking for strlcpy
+-- Looking for strlcpy - not found
+-- Looking for strsep
+-- Looking for strsep - not found
+-- Looking for strtok_r
+-- Looking for strtok_r - not found
+-- Looking for vasprintf
+-- Looking for vasprintf - not found
+-- Looking for timerclear
+-- Looking for timerclear - found
+-- Looking for timercmp
+-- Looking for timercmp - found
+-- Looking for timerisset
+-- Looking for timerisset - found
+-- Looking for timeradd
+-- Looking for timeradd - not found
+-- Looking for nanosleep
+-- Looking for nanosleep - not found
+-- Looking for putenv
+-- Looking for putenv - found
+-- Looking for umask
+-- Looking for umask - found
+-- Looking for clock_gettime
+-- Looking for clock_gettime - not found
+-- Looking for _gmtime64_s
+-- Looking for _gmtime64_s - found
+-- Looking for _gmtime64
+-- Looking for _gmtime64 - found
+-- Looking for sys/types.h
+-- Looking for sys/types.h - found
+-- Looking for stdint.h
+-- Looking for stdint.h - found
+-- Looking for stddef.h
+-- Looking for stddef.h - found
+-- Check size of struct sockaddr_un
+-- Check size of struct sockaddr_un - done
+-- Check size of uint8_t
+-- Check size of uint8_t - done
+-- Check size of uint16_t
+-- Check size of uint16_t - done
+-- Check size of uint32_t
+-- Check size of uint32_t - done
+-- Check size of uint64_t
+-- Check size of uint64_t - done
+-- Check size of short
+-- Check size of short - done
+-- Check size of int
+-- Check size of int - done
+-- Check size of unsigned
+-- Check size of unsigned - done
+-- Check size of unsigned int
+-- Check size of unsigned int - done
+-- Check size of long
+-- Check size of long - done
+-- Check size of long long
+-- Check size of long long - done
+-- Performing Test HAVE_INLINE
+-- Performing Test HAVE_INLINE - Success
+-- Looking for __func__
+-- Looking for __func__ - found
+-- Looking for __FUNCTION__
+-- Looking for __FUNCTION__ - found
+-- Looking for TAILQ_FOREACH
+-- Looking for TAILQ_FOREACH - not found
+-- Performing Test EVENT__HAVE_DECL_CTL_KERN
+-- Performing Test EVENT__HAVE_DECL_CTL_KERN - Failed
+-- Looking for CTL_KERN - not found
+-- Performing Test EVENT__HAVE_DECL_KERN_ARND
+-- Performing Test EVENT__HAVE_DECL_KERN_ARND - Failed
+-- Looking for KERN_ARND - not found
+-- Looking for F_SETFD
+-- Looking for F_SETFD - not found
+-- Check size of fd_mask
+-- Check size of fd_mask - failed
+-- Check size of size_t
+-- Check size of size_t - done
+-- Check size of off_t
+-- Check size of off_t - done
+-- Check size of ssize_t
+-- Check size of ssize_t - failed
+-- Check size of SSIZE_T
+-- Check size of SSIZE_T - done
+-- Check size of socklen_t
+-- Check size of socklen_t - done
+-- Check size of pid_t
+-- Check size of pid_t - failed
+-- Check size of pthread_t
+-- Check size of pthread_t - failed
+-- Check size of uintptr_t
+-- Check size of uintptr_t - done
+-- Check size of void *
+-- Check size of void * - done
+-- Check size of time_t
+-- Check size of time_t - done
+-- Check size of struct addrinfo
+-- Check size of struct addrinfo - done
+-- Check size of struct in6_addr
+-- Check size of struct in6_addr - done
+-- Performing Test EVENT__HAVE_STRUCT_IN6_ADDR_S6_ADDR16
+-- Performing Test EVENT__HAVE_STRUCT_IN6_ADDR_S6_ADDR16 - Failed
+-- Performing Test EVENT__HAVE_STRUCT_IN6_ADDR_S6_ADDR32
+-- Performing Test EVENT__HAVE_STRUCT_IN6_ADDR_S6_ADDR32 - Failed
+-- Check size of sa_family_t
+-- Check size of sa_family_t - failed
+-- Check size of struct sockaddr_in6
+-- Check size of struct sockaddr_in6 - done
+-- Performing Test EVENT__HAVE_STRUCT_SOCKADDR_IN6_SIN6_LEN
+-- Performing Test EVENT__HAVE_STRUCT_SOCKADDR_IN6_SIN6_LEN - Failed
+-- Performing Test EVENT__HAVE_STRUCT_SOCKADDR_IN_SIN_LEN
+-- Performing Test EVENT__HAVE_STRUCT_SOCKADDR_IN_SIN_LEN - Failed
+-- Check size of struct sockaddr_storage
+-- Check size of struct sockaddr_storage - done
+-- Performing Test EVENT__HAVE_STRUCT_SOCKADDR_STORAGE_SS_FAMILY
+-- Performing Test EVENT__HAVE_STRUCT_SOCKADDR_STORAGE_SS_FAMILY - Success
+-- Performing Test EVENT__HAVE_STRUCT_SOCKADDR_STORAGE___SS_FAMILY
+-- Performing Test EVENT__HAVE_STRUCT_SOCKADDR_STORAGE___SS_FAMILY - Failed
+-- Check size of struct linger
+-- Check size of struct linger - done
+-- 
+--         ---( Libevent 2.1.12-stable )---
+-- 
+-- Available event backends: 
+-- CMAKE_BINARY_DIR:         C:/JenkinsAgent/workspace/workspace/cdc-develop-win/projects/windows
+-- CMAKE_CURRENT_BINARY_DIR: C:/JenkinsAgent/workspace/workspace/cdc-develop-win/projects/windows/3rd/libevent
+-- CMAKE_SOURCE_DIR:         C:/JenkinsAgent/workspace/workspace/cdc-develop-win
+-- CMAKE_CURRENT_SOURCE_DIR: C:/JenkinsAgent/workspace/workspace/cdc-develop-win/3rd/libevent
+-- PROJECT_BINARY_DIR:       C:/JenkinsAgent/workspace/workspace/cdc-develop-win/projects/windows/3rd/libevent
+-- PROJECT_SOURCE_DIR:       C:/JenkinsAgent/workspace/workspace/cdc-develop-win/3rd/libevent
+-- CMAKE_MODULE_PATH:        C:/JenkinsAgent/workspace/workspace/cdc-develop-win/3rd/libevent/cmake/
+-- CMAKE_COMMAND:            C:/Program Files/CMake/bin/cmake.exe
+-- CMAKE_ROOT:               C:/Program Files/CMake/share/cmake-4.4
+-- CMAKE_SYSTEM:             Windows-10.0.26100
+-- CMAKE_SYSTEM_NAME:        Windows
+-- CMAKE_SYSTEM_VERSION:     10.0.26100
+-- CMAKE_SYSTEM_PROCESSOR:   AMD64
+-- CMAKE_SKIP_RPATH:         NO
+-- CMAKE_VERBOSE_MAKEFILE:   FALSE
+-- CMAKE_C_FLAGS:            /utf-8
+-- CMAKE_BUILD_TYPE:         Release
+-- CMAKE_C_COMPILER:         C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe (id MSVC, clang 0, GNUC 0)
+-- CMAKE_AR:                 C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/lib.exe
+-- CMAKE_RANLIB:             :
+-- 
+-- [cdc] sources common   = 31
+-- [cdc] sources platform = 5 (windows)
+-- [cdc] build SHARED     = ON
+-- [cdc] build STATIC     = OFF
+-- Configuring done (106.6s)
+-- Generating done (0.2s)
+-- Build files have been written to: C:/JenkinsAgent/workspace/workspace/cdc-develop-win/projects/windows
+[cdc] Configure OK
+
+[cdc] ---- Step 5/5: CMake build ----
+适用于 .NET Framework MSBuild 版本 18.6.3+84d3e95b4
+
+适用于 .NET Framework MSBuild 版本 18.6.3+84d3e95b4
+
+  1>Checking Build System
+  Building Custom Rule C:/JenkinsAgent/workspace/workspace/cdc-develop-win/3rd/libevent/CMakeLists.txt
+  buffer.c
+  bufferevent.c
+  bufferevent_filter.c
+  bufferevent_pair.c
+  bufferevent_ratelim.c
+  bufferevent_sock.c
+  event.c
+  evmap.c
+  evthread.c
+  evutil.c
+  evutil_rand.c
+  evutil_time.c
+  listener.c
+  log.c
+  signal.c
+  strlcpy.c
+  evthread_win32.c
+  buffer_iocp.c
+  bufferevent_async.c
+  event_iocp.c
+  正在生成代码...
+  正在编译...
+  win32select.c
+  正在生成代码...
+  event_core_static.vcxproj -> C:\JenkinsAgent\workspace\workspace\cdc-develop-win\build\windows\release\lib\event_core.lib
+  Building Custom Rule C:/JenkinsAgent/workspace/workspace/cdc-develop-win/CMakeLists.txt
+  cdc.cpp
+  cdc_session.cpp
+  logger.cpp
+  miniaudio_impl.cpp
+  debug_info_center.cpp
+  debug_info_reporter.cpp
+  debug_info_sink.cpp
+  quality_collector.cpp
+  event_loop.cpp
+  stream_controller.cpp
+  stream_tcp.cpp
+  stream_xrtc.cpp
+  stream_rquic.cpp
+  ctrl.cpp
+  ctrl_factory.cpp
+  spk.cpp
+  spk_factory.cpp
+  spk_render_factory.cpp
+  adec_factory.cpp
+  adec_opus.cpp
+  spk_render_core.cpp
+  mic.cpp
+  mic_factory.cpp
+  mic_capture_factory.cpp
+  aenc_factory.cpp
+  aenc_opus.cpp
+  cam_enumerator.cpp
+  cam_enumerator_factory.cpp
+  cam_factory.cpp
+  mon_factory.cpp
+  main_thread_dispatcher.cpp
+  spk_render_wasapi.cpp
+  cam_windows.cpp
+  venc_windows.cpp
+  mon_windows.cpp
+  vdec_windows.cpp
+    正在创建库 C:/JenkinsAgent/workspace/workspace/cdc-develop-win/build/windows/release/lib/cdc.lib 和对象 C:/JenkinsAgent/workspace/workspace/cdc-develop-win/build/windows/release/lib/cdc.exp
+  cdc.vcxproj -> C:\JenkinsAgent\workspace\workspace\cdc-develop-win\build\windows\release\dll\cdc.dll
+  [cdc] remove linker side-product: cdc.exp
+  Building Custom Rule C:/JenkinsAgent/workspace/workspace/cdc-develop-win/CMakeLists.txt
+
+============================================================
+  Build succeeded (Release | x64)
+  Output: C:\JenkinsAgent\workspace\workspace\cdc-develop-win\projects\windows\Release
+============================================================
+[cdc-develop-win] $ cmd /c call C:\Users\Admin\AppData\Local\Temp\jenkins18276316159852906017.bat
+
+C:\JenkinsAgent\workspace\workspace\cdc-develop-win>chcp 65001  1>nul 
+
+C:\JenkinsAgent\workspace\workspace\cdc-develop-win>call projects\windows\package.bat Release 
+============================================================
+  CDC SDK Package (Release)
+============================================================
+
+[cdc] version   : 1.0.0-develop.2+af4ccba
+[cdc] output    : C:\JenkinsAgent\workspace\workspace\cdc-develop-win\build\windows\release
+[cdc] timestamp : 20260618-124912
+[cdc] creating  : package\cdc-win-1.0.0-develop.2+af4ccba-20260618-124912.zip
+
+============================================================
+  Package created successfully
+    package\cdc-win-1.0.0-develop.2+af4ccba-20260618-124912.zip
+============================================================
+[cdc] recorded   : package\_last_zip.txt
+[cdc-develop-win] $ cmd /c call C:\Users\Admin\AppData\Local\Temp\jenkins11144754968887315059.bat
+
+C:\JenkinsAgent\workspace\workspace\cdc-develop-win>chcp 65001  1>nul 
+
+C:\JenkinsAgent\workspace\workspace\cdc-develop-win>call projects\windows\upload.bat "" "http://localhost:9000" "LP086FPSRZ14B67WYX8Q" "****" 
+============================================================
+  CDC SDK Upload to MinIO
+============================================================
+
+[cdc] zip  file : C:\JenkinsAgent\workspace\workspace\cdc-develop-win\projects\windows\package\cdc-win-1.0.0-develop.2+af4ccba-20260618-124912.zip
+[cdc] endpoint  : http://localhost:9000
+[cdc] zip name : cdc-win-1.0.0-develop.2+af4ccba-20260618-124912.zip
+[cdc] minio key : cdc/develop/windows/1.0.0/20260618/cdc-win-1.0.0-develop.2+af4ccba-20260618-124912.zip
+[cdc] checking if object exists...
+[cdc] HEAD status: 404
+[cdc] object not found on server, will upload.
+[cdc] uploading to bucket sdk-packets ...
+[cdc] upload result: 200
+[cdc] Upload completed successfully.
+[cdc] verified: object exists on server.
+[cdc] deleted local file: C:\JenkinsAgent\workspace\workspace\cdc-develop-win\projects\windows\package\cdc-win-1.0.0-develop.2+af4ccba-20260618-124912.zip
+Finished: SUCCESS

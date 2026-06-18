@@ -13,9 +13,9 @@ credentials:
       - usernamePassword:
           description: "MinIO uploader credentials"
           id: "minio-jenkins"
-          password: "{AQAAABAAAAAgpUTxeFvPE4aMJs1k7zxWobi+tgLCzFAMXIxPDs/h9opQwraLhTe3dg3mz9IlELed}"
+          password: "${env.MINIO_JENKINS_SK}"
           scope: GLOBAL
-          username: "demo_jenkins_access_key_32chars"
+          username: "${env.MINIO_JENKINS_AK}"
       - usernamePassword:
           description: "MinIO root credentials"
           id: "minio-root"
@@ -88,6 +88,7 @@ jenkins:
       name: "windows-build"
       nodeDescription: "build win jobs"
       numExecutors: 2
+      remoteFS: "C:\\JenkinsAgent\\workspace"
       retentionStrategy: "always"
   numExecutors: 2
   primaryView:
@@ -96,7 +97,7 @@ jenkins:
   projectNamingStrategy: "standard"
   quietPeriod: 5
   remotingSecurity:
-    enabled: true
+    enabled: false
   scmCheckoutRetryCount: 2
   securityRealm:
     local:
@@ -105,6 +106,7 @@ jenkins:
       users:
       - id: "admin"
         name: "admin"
+        password: ${JENKINS_ADMIN_PASSWORD}
         properties:
         - "apiToken"
         - "consoleUrlProvider"
@@ -303,6 +305,7 @@ unclassified:
     storage: "file"
   location:
     adminAddress: "address not configured yet <nobody@nowhere>"
+    url: "http://localhost:8081"
   mailer:
     charset: "UTF-8"
     useSsl: false
