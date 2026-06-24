@@ -11,12 +11,6 @@ credentials:
     domainCredentials:
     - credentials:
       - usernamePassword:
-          description: "MinIO uploader credentials"
-          id: "minio-jenkins"
-          password: "${env.MINIO_JENKINS_SK}"
-          scope: GLOBAL
-          username: "${env.MINIO_JENKINS_AK}"
-      - usernamePassword:
           description: "MinIO root credentials"
           id: "minio-root"
           password: "{AQAAABAAAAAwGPG++CUNPLOmTxcCrEhAUWttDi/zXo5Q/MX8ypk4zW4XLmLgMH5+3mWUQOAnW9xFCR4laoE91pj8jvIa0OTYcA==}"

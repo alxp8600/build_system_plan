@@ -1,4 +1,4 @@
-name: sdk-CI
+name: sdk-ci
 
 x-restart: &restart
   restart: unless-stopped
@@ -164,6 +164,7 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       MINIO_JENKINS_AK: ${MINIO_JENKINS_AK}
       MINIO_JENKINS_SK: ${MINIO_JENKINS_SK}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://localhost:9000}
       PG_PASSWORD: ${PG_PASSWORD}
       NEXUS_USER: ${NEXUS_USER}
       NEXUS_PASS: ${NEXUS_PASS}
@@ -178,6 +179,7 @@ services:
       - ./jenkins/ssh:/var/jenkins_home/.ssh:ro
       - ./jenkins/casc/jenkins.yaml:/usr/share/jenkins/ref/casc/jenkins.yaml:ro
       - ./jenkins/jobs/cdc-develop-win:/var/jenkins_home/jobs/cdc-develop-win
+      - ./jenkins/init.groovy.d:/var/jenkins_home/init.groovy.d:ro
     networks: [internal]
     ports: ["8081:8080", "50000:50000"]
     mem_limit: 4g

@@ -127,8 +127,12 @@ main() {
                 CMD="restart"
                 shift
                 ;;
+            --reset-jenkins)
+                CMD="reset-jenkins"
+                shift
+                ;;
             *)
-                echo "用法: $0 [-d] [--build] [down|logs|ps|restart]"
+                echo "用法: $0 [-d] [--build] [down|logs|ps|restart|--reset-jenkins]"
                 exit 1
                 ;;
         esac
@@ -156,6 +160,32 @@ main() {
             info "所有服务已重启"
             exit 0
             ;;
+        reset-jenkins)
+            show_banner
+            warn "即将删除 Jenkins 持久化数据卷 (jenkins_home)！"
+            warn "删除后 Jenkins 配置/凭据/构建历史将全部丢失"
+            warn "但凭据会在启动时由 init.groovy.d 自动重建"
+            echo ""
+            read -r -p "确认删除? 输入 YES 继续: " confirm
+            if [ "$confirm" != "YES" ]; then
+                info "已取消操作"
+                exit 0
+            fi
+
+            step "正在停止 Jenkins 容器..."
+            dc stop jenkins 2>/dev/null || true
+
+            step "正在删除 Jenkins 持久化数据卷..."
+            dc down -v 2>/dev/null || true
+            docker volume rm sdk-ci_jenkins_home 2>/dev/null || true
+            docker volume rm demo_jenkins_home 2>/dev/null || true
+
+            info "Jenkins 数据卷已清空"
+            info "现在重新启动项目："
+            info "  docker volume rm sdk-ci_jenkins_home  # (如仍有残留)"
+            info "  ./start.sh -d --build"
+            exit 0
+            ;;
         *)
             ;;
     esac
@@ -164,7 +194,7 @@ main() {
 
     # 拉取远程镜像 + 构建本地镜像
     step "正在拉取/更新远程镜像..."
-    dc pull 2>/dev/null || warn "部分镜像拉取失败，将尝试本地构建"
+    dc pull --progress plain || warn "部分镜像拉取失败，将尝试本地构建"
 
     step "正在构建本地镜像 (upload-token / decrypt-proxy / jenkins)..."
     if $BUILD; then
