@@ -45,15 +45,15 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>projects/linux/build.sh release</command>
+      <command>projects/android/build.sh release</command>
       <configuredLocalRules/>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
-      <command>projects/linux/package.sh release</command>
+      <command>projects/android/package.sh release</command>
       <configuredLocalRules/>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
-      <command>projects/linux/upload.sh &quot;&quot; &quot;${MINIO_ENDPOINT}&quot; &quot;${MINIO_AK}&quot; &quot;${MINIO_SK}&quot;</command>
+      <command>projects/android/upload.sh &quot;&quot; &quot;${MINIO_ENDPOINT}&quot; &quot;${MINIO_AK}&quot; &quot;${MINIO_SK}&quot;</command>
       <configuredLocalRules/>
     </hudson.tasks.Shell>
   </builders>

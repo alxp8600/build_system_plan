@@ -13,37 +13,73 @@ credentials:
       - usernamePassword:
           description: "MinIO root credentials"
           id: "minio-root"
-          password: "{AQAAABAAAAAwGPG++CUNPLOmTxcCrEhAUWttDi/zXo5Q/MX8ypk4zW4XLmLgMH5+3mWUQOAnW9xFCR4laoE91pj8jvIa0OTYcA==}"
+          password: "{AQAAABAAAABwztp6BIBHtBmjpYDCCJM8F5IbF0Fe2M4igRrsDUpq5DFqJrPt0C0IJFv7oj3DnSd0gTbCSS28m4SA/5Nhu+2BLvh7+rGvDI6qkmpRftuZpvmPOSn8WOKQU7M/OWysw6kiZib3uFHbIMo34b4SDwLblNr6jwk72/shKWrlGxGwP6k=}"
           scope: GLOBAL
           username: "admin"
       - usernamePassword:
           description: "PostgreSQL catalog DB"
           id: "catalog-db"
-          password: "{AQAAABAAAAAgwH2F2NSSgpPxO4NuaUiDyz8nsFYTWtpxmQHxAE8le41We629y5HkjujzCHDpKZaM}"
+          password: "{AQAAABAAAABQaLrWN2c2TjBkMzTq7ck5LIEMbGctuaqxrxWac/zhAR+c/DzbUgyXAgqj5ulQ23skxlqm1L4p36O046lMA+Ak80eAK0o4oVts546eMOrHpLxsInec+7cNVgLtTFOryM3q}"
           scope: GLOBAL
           username: "catalog"
       - usernamePassword:
           description: "Nexus uploader"
           id: "nexus"
-          password: "{AQAAABAAAAAgbUadri3ONL68OsUfvmBKii6f4psu28PlWaRibVTLvSMjLVilLMZ2kwV9jrpg2+ty}"
+          password: "{AQAAABAAAABQW2CDo7wtiRS/AFTQ2mYVcliR5m3FQZuXNQnxDVqKobxEz63rPIgAfAQIjsYo3SvGZwLfGw6h9qfJxsiNXKdYdkwNg4Qnci/Uuivn5w4nDq/51UFFKZsfwgLB16B3PYZz}"
           scope: GLOBAL
           username: "demo-nexus-user"
       - string:
           description: "Sentry auth token"
           id: "sentry-token"
           scope: GLOBAL
-          secret: "{AQAAABAAAAAwesd4VFoJFDWPuUQkyTm/pHAi03niN7te3CoA2lVg0eY91fKk5z83IwIwCORRlh2Ek3G9dm+6iPJx/7Qp0BOdHw==}"
+          secret: "{AQAAABAAAABw32sPjjNMf2pA9zNbARbI9QcrS/esQfYKmkoIsY11O7V30NHx53RnkgR9ogKO5WokjqSrjStuP9XBHA2Hl//AvC+XyWl1aUHjnUlplwzalRMDYl9f0F+7KD7FLYmoWk/NZ0LFQ95C2ONch/I8z0Y7YV+6MhS+vl7kY7oJYDnPvS4=}"
       - basicSSHUserPrivateKey:
           description: "SSH key for GitLab/Gitea private repos"
           id: "gitea-bot"
           privateKeySource:
             directEntry:
-              privateKey: "{AQAAABAAAAAQmDq4tBXvenBWSCKo4no4FuxTpdFWgs04wlNhf0688Gs=}"
+              privateKey: "{AQAAABAAAABA71InImKP6QYCwIr4fpQdwxQ0ojLTRArkPoYUd0s0pBt4XgLmxLCsD9ZATFAN9ZC0FOzVvTT/z/P2NrXg+zE/fAG/GAjJnEYLGu+2KtNhQeo=}"
           scope: GLOBAL
           username: "jenkins"
       domain:
         name: "sdk-demo"
-    - domain: {
+    - credentials:
+      - usernamePassword:
+          description: "MinIO Jenkins Access/Secret Key"
+          id: "minio-jenkins"
+          password: "{AQAAABAAAAAwNBYJy4YmDHVQ0jK0T0i1eMrRLN7sLK3SxAR7lrYQe/lZ6FOARXXAWMPZsxRaYxSalgZYqC0/NYarIibWayE8zQ==}"
+          scope: GLOBAL
+          username: "LP086FPSRZ14B67WYX8Q"
+      - string:
+          description: "Catalog DB Password"
+          id: "pg-password"
+          scope: GLOBAL
+          secret: "{AQAAABAAAAAgy3ZD6pwxrvt5jHtbM9h77Mf4q+kPWds4z4phGdQeLRRWoi/HunsO3ZQMEyTelYPk}"
+      - usernamePassword:
+          description: "Nexus Repository Credentials"
+          id: "nexus"
+          password: "{AQAAABAAAAAgigRaWwqpUtfxO07W7ZZo8KOkdTaoxiXjdlF77JwrkN8ZmyamkGTjqZi3dANJ/SvB}"
+          scope: GLOBAL
+          username: "demo-nexus-user"
+      - string:
+          description: "Sentry Auth Token"
+          id: "sentry-token"
+          scope: GLOBAL
+          secret: "{AQAAABAAAAAwtXRAgH5anNGPEkdLnu6RM9NI00Ro88IdZWeqks6ni+mP+IBl2WHQOqPGq7zajp0tY55TwLX4w/u+bGtTCK5k3g==}"
+      - string:
+          description: "MinIO API endpoint (for agent upload)"
+          id: "minio-endpoint"
+          scope: GLOBAL
+          secret: "{AQAAABAAAAAggPqnP1sTM0TtXC3sKKHWtLu3+2iY5Hh3CSBE33ZicEDfXs03v0/0g1ViaqeDcw5A}"
+      - basicSSHUserPrivateKey:
+          description: "GitLab项目部署私钥 ed25519"
+          id: "gitlab-ed25519-key"
+          privateKeySource:
+            directEntry:
+              privateKey: "{AQAAABAAAAGgdgC/ucE5ID2br0vnlp6cuuYiM59NkRwQtwfVPB3kPFeu0eDIaFqIYYROx88NcQs/89ZkgmjzUfRf+aFrSRium5E7YTB+4+o9744FiodZugTp/vScsYfSoc4TIzk4tkhBGGkWW3H3gTnLPS/ZwB4833kzcC4FjLwuj5GbHCKIMaSgaqBQsdeuCSBVktRpVquhYSXAlwboDi8kxvtsV1kpeR4nFqbI4JYkuppHhvN5ZQg4Kn1C40Y9yWacbpSNeiWTHgqp9YgKrqnxgDmvuIhRMRW29eeG/WGL7uckIfudAAkppFVA7JVvZoQCzveHwj9pek34xyy3dYONPUwpFTW+LTYtK6IyaN3VzbRcW9nLzimd1aszTvjz3Gwoi8djxNkm4l+TT+iS535BZABV6dhqNXs79JybrGpa3BV1cTrKrt9YRQCgAABhfL9q6ve/JWB+Pm2kLeImbJWXpqARnK0EnKXjKU7ofOa7sY1J1tNcGHoiUPes2O+LnQfbTfU1RAM55uy0KWfvJvm5DXSpkOcglIx4lYqiAZq6YbykdtAtU5mevAouIlsvx6iYJywcb4j+}"
+          scope: GLOBAL
+          username: "git"
+      domain: {
         }
   user: {
     }
@@ -57,8 +93,20 @@ jenkins:
   disableRememberMe: false
   disabledAdministrativeMonitors:
   - "hudson.model.UpdateCenter$CoreUpdateMonitor"
+  - "hudson.util.DoubleLaunchChecker"
+  - "jenkins.monitor.JavaVersionRecommendationAdminMonitor-17-2026-03-31-DANGER"
+  globalNodeProperties:
+  - envVars:
+      env:
+      - key: "ANDROID_NDK_ROOT"
+        value: "/opt/android-ndk-r26b"
+      - key: "GIT_SSH_COMMAND"
+        value: "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
   labelAtoms:
   - name: "built-in"
+  - name: "linux"
+  - name: "linux-build"
+  - name: "mac-build"
   - name: "windows-build"
   log: {
     }
@@ -77,12 +125,12 @@ jenkins:
   - "responseTime"
   nodes:
   - permanent:
+      labelString: "linux"
       launcher: "inbound"
       mode: EXCLUSIVE
-      name: "windows-build"
-      nodeDescription: "build win jobs"
+      name: "linux-build"
+      nodeDescription: "linux  and android compile"
       numExecutors: 2
-      remoteFS: "C:\\JenkinsAgent\\workspace"
       retentionStrategy: "always"
   - permanent:
       launcher: "inbound"
@@ -92,6 +140,14 @@ jenkins:
       numExecutors: 2
       remoteFS: "/Users/jenkins-agent/jenkinsAgent"
       retentionStrategy: "always"
+  - permanent:
+      launcher: "inbound"
+      mode: EXCLUSIVE
+      name: "windows-build"
+      nodeDescription: "build win jobs"
+      numExecutors: 2
+      remoteFS: "C:\\JenkinsAgent\\workspace"
+      retentionStrategy: "always"
   numExecutors: 2
   primaryView:
     all:
@@ -99,7 +155,7 @@ jenkins:
   projectNamingStrategy: "standard"
   quietPeriod: 5
   remotingSecurity:
-    enabled: false
+    enabled: true
   scmCheckoutRetryCount: 2
   securityRealm:
     local:
@@ -108,7 +164,6 @@ jenkins:
       users:
       - id: "admin"
         name: "admin"
-        password: ${JENKINS_ADMIN_PASSWORD}
         properties:
         - "apiToken"
         - "consoleUrlProvider"
@@ -261,6 +316,7 @@ unclassified:
           cloudWebhook:
             enableHookSignature: false
             manageHooks: false
+            webhooksCacheDuration: 180
   buildDiscarders:
     configuredBuildDiscarders:
     - "jobBuildDiscarder"
@@ -307,7 +363,7 @@ unclassified:
     storage: "file"
   location:
     adminAddress: "address not configured yet <nobody@nowhere>"
-    url: "http://localhost:8081"
+    url: "http://localhost:8081/"
   mailer:
     charset: "UTF-8"
     useSsl: false
