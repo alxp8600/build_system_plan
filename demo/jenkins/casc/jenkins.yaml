@@ -84,6 +84,14 @@ jenkins:
       numExecutors: 2
       remoteFS: "C:\\JenkinsAgent\\workspace"
       retentionStrategy: "always"
+  - permanent:
+      launcher: "inbound"
+      mode: EXCLUSIVE
+      name: "mac-build"
+      nodeDescription: "build mac jobs"
+      numExecutors: 2
+      remoteFS: "/Users/jenkins-agent/jenkinsAgent"
+      retentionStrategy: "always"
   numExecutors: 2
   primaryView:
     all:

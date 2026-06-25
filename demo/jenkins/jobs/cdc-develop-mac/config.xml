@@ -1,7 +1,7 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Windows cdc develop branch 编译任务</description>
+  <description>mac cdc develop branch 编译任务</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <jenkins.model.BuildDiscarderProperty>
@@ -27,7 +27,7 @@
       </hudson.plugins.git.BranchSpec>
     </branches>
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
-    <gitTool>git-win</gitTool>
+    <gitTool>Default</gitTool>
     <submoduleCfg class="empty-list"/>
     <extensions>
       <hudson.plugins.git.extensions.impl.LocalBranch>
@@ -35,7 +35,7 @@
       </hudson.plugins.git.extensions.impl.LocalBranch>
     </extensions>
   </scm>
-  <assignedNode>windows-build</assignedNode>
+  <assignedNode>mac-build</assignedNode>
   <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
@@ -43,21 +43,18 @@
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <builders>
-    <hudson.tasks.BatchFile>
-      <command>chcp 65001 &gt;nul&#xd;
-call projects\windows\build.bat Release</command>
+    <hudson.tasks.Shell>
+      <command>projects/mac/build.sh Release</command>
       <configuredLocalRules/>
-    </hudson.tasks.BatchFile>
-    <hudson.tasks.BatchFile>
-      <command>chcp 65001 &gt;nul&#xd;
-call projects\windows\package.bat Release</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>projects/mac/package.sh Release</command>
       <configuredLocalRules/>
-    </hudson.tasks.BatchFile>
-    <hudson.tasks.BatchFile>
-      <command>chcp 65001 &gt;nul&#xd;
-call projects\windows\upload.bat &quot;&quot; &quot;%MINIO_ENDPOINT%&quot; &quot;%MINIO_AK%&quot; &quot;%MINIO_SK%&quot;</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>projects/mac/upload.sh &quot;&quot; &quot;${MINIO_ENDPOINT}&quot; &quot;${MINIO_AK}&quot; &quot;${MINIO_SK}&quot;</command>
       <configuredLocalRules/>
-    </hudson.tasks.BatchFile>
+    </hudson.tasks.Shell>
   </builders>
   <publishers/>
   <buildWrappers>

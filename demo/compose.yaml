@@ -178,7 +178,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./jenkins/ssh:/var/jenkins_home/.ssh:ro
       - ./jenkins/casc/jenkins.yaml:/usr/share/jenkins/ref/casc/jenkins.yaml:ro
-      - ./jenkins/jobs/cdc-develop-win:/var/jenkins_home/jobs/cdc-develop-win
+      - ./jenkins/jobs:/var/jenkins_home/jobs
       - ./jenkins/init.groovy.d:/var/jenkins_home/init.groovy.d:ro
     networks: [internal]
     ports: ["8081:8080", "50000:50000"]
