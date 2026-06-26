@@ -36,7 +36,7 @@
       </hudson.plugins.git.extensions.impl.LocalBranch>
     </extensions>
   </scm>
-  <assignedNode>linux-build</assignedNode>
+  <assignedNode>android-build</assignedNode>
   <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>

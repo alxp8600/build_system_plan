@@ -13,19 +13,19 @@ credentials:
       - usernamePassword:
           description: "MinIO root credentials"
           id: "minio-root"
-          password: "{AQAAABAAAABwztp6BIBHtBmjpYDCCJM8F5IbF0Fe2M4igRrsDUpq5DFqJrPt0C0IJFv7oj3DnSd0gTbCSS28m4SA/5Nhu+2BLvh7+rGvDI6qkmpRftuZpvmPOSn8WOKQU7M/OWysw6kiZib3uFHbIMo34b4SDwLblNr6jwk72/shKWrlGxGwP6k=}"
+          password: "{AQAAABAAAABwc8Z3F+aQ+gZkcXPaxsHOs5uKFrUD5IMQCl8e1cmWS5/rBCyIopTzaXAzOywlND9hb6p2FXsElMuEJfvmiAVc6/dkCjYI/JVTIjUO4NNGjAyHSVu62qiKSP/A3bUTlz9h1JmgDUdzUP5Secxua+DSGpRXfCrsBjJ6okQrqXQLbKQ=}"
           scope: GLOBAL
           username: "admin"
       - usernamePassword:
           description: "PostgreSQL catalog DB"
           id: "catalog-db"
-          password: "{AQAAABAAAABQaLrWN2c2TjBkMzTq7ck5LIEMbGctuaqxrxWac/zhAR+c/DzbUgyXAgqj5ulQ23skxlqm1L4p36O046lMA+Ak80eAK0o4oVts546eMOrHpLxsInec+7cNVgLtTFOryM3q}"
+          password: "{AQAAABAAAABQVaJgQ8A4Rce/w1l2Zilbck/Ve7+jTeriHeVGs3YtQY6b9uanREy96OEkVVc8u0nFpTmUY24sCX/J7xrEJzIjD7rGSR1I7NcjShpjklipKzxX8ZpmskNLpkKW+FSJ7aTN}"
           scope: GLOBAL
           username: "catalog"
       - usernamePassword:
           description: "Nexus uploader"
           id: "nexus"
-          password: "{AQAAABAAAABQW2CDo7wtiRS/AFTQ2mYVcliR5m3FQZuXNQnxDVqKobxEz63rPIgAfAQIjsYo3SvGZwLfGw6h9qfJxsiNXKdYdkwNg4Qnci/Uuivn5w4nDq/51UFFKZsfwgLB16B3PYZz}"
+          password: "{AQAAABAAAABQF4bFspJAVn+Yh2U4Dm4PQFjTLONkEqsI9XNbo0i0+Ekg69Z7t+8ibJIooLFEIE/cYGJvWRM1Wd44I5WIq4BhD4YPxOLVN2z1+PQEhJ0N5hqzufHtg8FzRDfgN+5azWsg}"
           scope: GLOBAL
           username: "demo-nexus-user"
       - string:
@@ -44,33 +44,6 @@ credentials:
       domain:
         name: "sdk-demo"
     - credentials:
-      - usernamePassword:
-          description: "MinIO Jenkins Access/Secret Key"
-          id: "minio-jenkins"
-          password: "{AQAAABAAAAAwNBYJy4YmDHVQ0jK0T0i1eMrRLN7sLK3SxAR7lrYQe/lZ6FOARXXAWMPZsxRaYxSalgZYqC0/NYarIibWayE8zQ==}"
-          scope: GLOBAL
-          username: "LP086FPSRZ14B67WYX8Q"
-      - string:
-          description: "Catalog DB Password"
-          id: "pg-password"
-          scope: GLOBAL
-          secret: "{AQAAABAAAAAgy3ZD6pwxrvt5jHtbM9h77Mf4q+kPWds4z4phGdQeLRRWoi/HunsO3ZQMEyTelYPk}"
-      - usernamePassword:
-          description: "Nexus Repository Credentials"
-          id: "nexus"
-          password: "{AQAAABAAAAAgigRaWwqpUtfxO07W7ZZo8KOkdTaoxiXjdlF77JwrkN8ZmyamkGTjqZi3dANJ/SvB}"
-          scope: GLOBAL
-          username: "demo-nexus-user"
-      - string:
-          description: "Sentry Auth Token"
-          id: "sentry-token"
-          scope: GLOBAL
-          secret: "{AQAAABAAAAAwtXRAgH5anNGPEkdLnu6RM9NI00Ro88IdZWeqks6ni+mP+IBl2WHQOqPGq7zajp0tY55TwLX4w/u+bGtTCK5k3g==}"
-      - string:
-          description: "MinIO API endpoint (for agent upload)"
-          id: "minio-endpoint"
-          scope: GLOBAL
-          secret: "{AQAAABAAAAAggPqnP1sTM0TtXC3sKKHWtLu3+2iY5Hh3CSBE33ZicEDfXs03v0/0g1ViaqeDcw5A}"
       - basicSSHUserPrivateKey:
           description: "GitLab项目部署私钥 ed25519"
           id: "gitlab-ed25519-key"
@@ -79,6 +52,33 @@ credentials:
               privateKey: "{AQAAABAAAAGgdgC/ucE5ID2br0vnlp6cuuYiM59NkRwQtwfVPB3kPFeu0eDIaFqIYYROx88NcQs/89ZkgmjzUfRf+aFrSRium5E7YTB+4+o9744FiodZugTp/vScsYfSoc4TIzk4tkhBGGkWW3H3gTnLPS/ZwB4833kzcC4FjLwuj5GbHCKIMaSgaqBQsdeuCSBVktRpVquhYSXAlwboDi8kxvtsV1kpeR4nFqbI4JYkuppHhvN5ZQg4Kn1C40Y9yWacbpSNeiWTHgqp9YgKrqnxgDmvuIhRMRW29eeG/WGL7uckIfudAAkppFVA7JVvZoQCzveHwj9pek34xyy3dYONPUwpFTW+LTYtK6IyaN3VzbRcW9nLzimd1aszTvjz3Gwoi8djxNkm4l+TT+iS535BZABV6dhqNXs79JybrGpa3BV1cTrKrt9YRQCgAABhfL9q6ve/JWB+Pm2kLeImbJWXpqARnK0EnKXjKU7ofOa7sY1J1tNcGHoiUPes2O+LnQfbTfU1RAM55uy0KWfvJvm5DXSpkOcglIx4lYqiAZq6YbykdtAtU5mevAouIlsvx6iYJywcb4j+}"
           scope: GLOBAL
           username: "git"
+      - usernamePassword:
+          description: "MinIO Jenkins Access/Secret Key"
+          id: "minio-jenkins"
+          password: "{AQAAABAAAAAw08NDsZ0kfbshhtHrfPgyLc38U6XH+KVBJ9S0E2ZYQ/GT+q0UasAknnZ52n/iZtAe2qBoxSD7uu9y5PWj99HqOQ==}"
+          scope: GLOBAL
+          username: "LP086FPSRZ14B67WYX8Q"
+      - string:
+          description: "Catalog DB Password"
+          id: "pg-password"
+          scope: GLOBAL
+          secret: "{AQAAABAAAAAgCB7U5h84QBJrCcMXRGCSGad9feteN9y3xt3qoZXbWL0YcblSk4W0+q82Uk3YmDa5}"
+      - usernamePassword:
+          description: "Nexus Repository Credentials"
+          id: "nexus"
+          password: "{AQAAABAAAAAgvTr08fNmh32kv9awoaAVX6LdDv+XTnUAPuFqu5tg5t1CnESQZBViwmwYUY7cNuQw}"
+          scope: GLOBAL
+          username: "demo-nexus-user"
+      - string:
+          description: "Sentry Auth Token"
+          id: "sentry-token"
+          scope: GLOBAL
+          secret: "{AQAAABAAAAAwzRL+S+94e5yuHjw2KhjCFOda+xEm02ZZA6+NWfD0A7rniDQwo9lXixY8T5eiOYPKIxMeC03f1k2VEwYx8K4hnA==}"
+      - string:
+          description: "MinIO API endpoint (for agent upload)"
+          id: "minio-endpoint"
+          scope: GLOBAL
+          secret: "{AQAAABAAAAAgSvO/HMHeXIWeOkHsaFD8SFmEEszQWU3BqzWnYCih37nsxxN9s6H9sgs9bY6L1LKu}"
       domain: {
         }
   user: {
@@ -103,6 +103,8 @@ jenkins:
       - key: "GIT_SSH_COMMAND"
         value: "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
   labelAtoms:
+  - name: "android"
+  - name: "android-build"
   - name: "built-in"
   - name: "linux"
   - name: "linux-build"
@@ -125,12 +127,21 @@ jenkins:
   - "responseTime"
   nodes:
   - permanent:
+      labelString: "android"
+      launcher: "inbound"
+      mode: EXCLUSIVE
+      name: "android-build"
+      nodeDescription: "android build"
+      numExecutors: 2
+      remoteFS: "/home/jenkins-master/jenkinsAgent"
+      retentionStrategy: "always"
+  - permanent:
       labelString: "linux"
       launcher: "inbound"
       mode: EXCLUSIVE
       name: "linux-build"
-      nodeDescription: "linux  and android compile"
       numExecutors: 2
+      remoteFS: "/home/jenkins/jenkinsAgent"
       retentionStrategy: "always"
   - permanent:
       launcher: "inbound"
@@ -185,6 +196,45 @@ jenkins:
   views:
   - all:
       name: "all"
+  - list:
+      columns:
+      - "status"
+      - "weather"
+      - "jobName"
+      - "lastSuccess"
+      - "lastFailure"
+      - "lastDuration"
+      - "buildButton"
+      - "favoriteColumn"
+      jobNames:
+      - "cdc-develop-android"
+      - "cdc-develop-ios"
+      - "cdc-develop-linux"
+      - "cdc-develop-mac"
+      - "cdc-develop-win"
+      name: "develop"
+  - list:
+      columns:
+      - "status"
+      - "weather"
+      - "jobName"
+      - "lastSuccess"
+      - "lastFailure"
+      - "lastDuration"
+      - "buildButton"
+      - "favoriteColumn"
+      name: "hotfix"
+  - list:
+      columns:
+      - "status"
+      - "weather"
+      - "jobName"
+      - "lastSuccess"
+      - "lastFailure"
+      - "lastDuration"
+      - "buildButton"
+      - "favoriteColumn"
+      name: "master"
   viewsTabBar: "standard"
 globalCredentialsConfiguration:
   configuration:

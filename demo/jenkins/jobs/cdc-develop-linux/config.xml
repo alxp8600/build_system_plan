@@ -45,7 +45,11 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>projects/linux/build.sh release</command>
+      <command>export PATH=/usr/local/gcc9/bin:$PATH
+export CC=/usr/local/gcc9/bin/gcc
+export CXX=/usr/local/gcc9/bin/g++
+gcc -v
+projects/linux/build.sh release</command>
       <configuredLocalRules/>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
@@ -53,7 +57,12 @@
       <configuredLocalRules/>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
-      <command>projects/linux/upload.sh &quot;&quot; &quot;${MINIO_ENDPOINT}&quot; &quot;${MINIO_AK}&quot; &quot;${MINIO_SK}&quot;</command>
+      <command>export LC_ALL=C
+export LANG=C
+export PATH=/usr/local/curl-new/bin:$PATH
+which curl
+curl --version
+projects/linux/upload.sh &quot;&quot; &quot;${MINIO_ENDPOINT}&quot; &quot;${MINIO_AK}&quot; &quot;${MINIO_SK}&quot;</command>
       <configuredLocalRules/>
     </hudson.tasks.Shell>
   </builders>
